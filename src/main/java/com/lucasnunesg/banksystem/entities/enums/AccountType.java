@@ -5,9 +5,9 @@ public enum AccountType {
     PERSONAL(1),
     BUSINESS(2);
 
-    private int code;
+    private final int code;
 
-    private AccountType(int code) {
+    AccountType(int code) {
         this.code = code;
     }
 
