@@ -12,8 +12,7 @@ public record CreateAccountDto(
         @NotBlank String document,
         @NotBlank String email,
         @NotBlank String password,
-        @NotBlank AccountType accountType){
-
+        @NotBlank AccountType accountType) {
 
     public Account toEntity() {
         if (accountType == AccountType.BUSINESS) {
@@ -21,6 +20,6 @@ public record CreateAccountDto(
         } else if (accountType == AccountType.PERSONAL) {
             return new PersonalAccount(fullName, document, email, password);
         }
-        throw new IllegalArgumentException("Tipo de conta inválido: " + accountType);
+        throw new IllegalArgumentException("Invalid account type: " + accountType);
     }
 }
