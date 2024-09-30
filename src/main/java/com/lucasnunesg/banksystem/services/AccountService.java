@@ -37,9 +37,4 @@ public class AccountService {
         return obj.orElseThrow(() -> new IllegalArgumentException("User not found:" + id));
     }
 
-    public Account insert(Account obj) {
-        return repository.save(obj);
-    }
-
-
 }
