@@ -17,16 +17,18 @@ import java.util.Optional;
 public class TransferService {
 
     private final AccountService accountService;
-
+    private final AuthorizationService authorizationService;
     private final TransferRepository transferRepository;
 
     @Autowired
     protected TransferService(
             AccountRepository accountRepository,
             AccountService accountService,
+            AuthorizationService authorizationService,
             TransferRepository transferRepository) {
         this.accountService = accountService;
         this.transferRepository = transferRepository;
+        this.authorizationService = authorizationService;
     }
 
     public List<Transfer> findAll() {
@@ -59,7 +61,7 @@ public class TransferService {
             throw new UnsupportedOperationException("Insufficient balance");
         }
 
-        if (!authorizeTransaction()) {
+        if (!authorizationService.isAuthorizedTransaction()) {
             notifyUser(payeeId, false);
             throw new UnsupportedOperationException("Transaction was not authorized");
         }
