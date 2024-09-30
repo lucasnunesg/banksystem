@@ -40,6 +40,11 @@ public class TransferService {
 
     @Transactional
     public Transfer transfer(TransferDto transferDto) {
+
+        if (transferDto.senderId().equals(transferDto.receiverId())) {
+            throw new IllegalArgumentException("Sender and receiver cannot be the same account.");
+        }
+
         Account sender = accountService.findById(transferDto.senderId());
         Account receiver = accountService.findById(transferDto.receiverId());
 
