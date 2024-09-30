@@ -20,7 +20,7 @@ public class DatabaseSeed implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         PersonalAccount pa1 = new PersonalAccount(
                 "Lucas",
                 "01234567890",
