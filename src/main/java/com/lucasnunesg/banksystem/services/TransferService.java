@@ -50,28 +50,28 @@ public class TransferService {
         Account sender = accountService.findById(transferDto.senderId());
         Account receiver = accountService.findById(transferDto.receiverId());
 
-        Long payeeId = sender.getId();
+        Long senderId = sender.getId();
         BigDecimal amount = transferDto.amount();
 
-        if (!canTransfer(payeeId)) {
+        if (!canTransfer(senderId)) {
             throw new UnsupportedOperationException("Business accounts can't transfer money");
         }
 
-        if (!checkBalance(payeeId, amount)) {
+        if (!checkBalance(senderId, amount)) {
             throw new UnsupportedOperationException("Insufficient balance");
         }
 
         if (!authorizationService.isAuthorizedTransaction()) {
-            notifyUser(payeeId, false);
+            notifyUser(senderId, false);
             throw new UnsupportedOperationException("Transaction was not authorized");
         }
 
         try {
-            executeTransfer(payeeId, amount);
+            executeTransfer(senderId, amount);
         } catch (Exception e) {
-            notifyUser(payeeId, false);
+            notifyUser(senderId, false);
         }
-        notifyUser(payeeId, true);
+        notifyUser(senderId, true);
 
         accountService.credit(receiver.getId(),amount);
         accountService.debit(sender.getId(), amount);
