@@ -27,16 +27,16 @@ public class DatabaseSeed implements CommandLineRunner {
     @Override
     public void run(String... args) {
         PersonalAccount pa1 = new PersonalAccount(
-                "Lucas",
-                "01234567890",
-                "lucas@gmail.com",
-                "123456");
+                "Birdperson",
+                "000.000.000-00",
+                "birdperson@gmail.com",
+                "tammy");
 
         BusinessAccount ba1 = new BusinessAccount(
-                "Syndicate Software",
-                "09876543210",
-                "syndicate@gmail.com",
-                "admin");
+                "Rick Sanchez",
+                "111.111.111-11",
+                "rick@gmail.com",
+                "picklerick");
 
         ba1.setBalance(BigDecimal.valueOf(5000.00));
         pa1.setBalance(BigDecimal.valueOf(3000.00));
