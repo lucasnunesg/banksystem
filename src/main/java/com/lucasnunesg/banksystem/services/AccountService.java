@@ -2,6 +2,7 @@ package com.lucasnunesg.banksystem.services;
 
 import com.lucasnunesg.banksystem.controllers.dto.CreateAccountDto;
 import com.lucasnunesg.banksystem.entities.Account;
+import com.lucasnunesg.banksystem.entities.PersonalAccount;
 import com.lucasnunesg.banksystem.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class AccountService {
     }
 
     public Account createAccount(CreateAccountDto dto) {
-        var account = repository.findByEmailOrDocument(dto.email(),dto.document());
+        Optional<Account> account = repository.findByEmailOrDocument(dto.email(), dto.document());
         if (account.isPresent()) {
             throw new UnsupportedOperationException("Account already exists");
         }
@@ -35,6 +36,11 @@ public class AccountService {
     public Account findById(Long id) {
         Optional<Account> obj = repository.findById(id);
         return obj.orElseThrow(() -> new IllegalArgumentException("User not found:" + id));
+    }
+
+    public boolean canTransfer(Long id) {
+        Account account = findById(id);
+        return account instanceof PersonalAccount;
     }
 
 }
