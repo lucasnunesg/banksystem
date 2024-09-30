@@ -58,6 +58,7 @@ public class TransferService {
             notifyUser(payeeId, false);
             throw new UnsupportedOperationException("Transaction was not authorized");
         }
+
         try {
             executeTransfer(payeeId, amount);
         } catch (Exception e) {
@@ -65,7 +66,12 @@ public class TransferService {
         }
         notifyUser(payeeId, true);
 
-        return new Transfer(sender, receiver,amount);
+        accountService.credit(receiver.getId(),amount);
+        accountService.debit(sender.getId(), amount);
+
+        Transfer transfer = new Transfer(sender, receiver, amount);
+
+        return transferRepository.save(transfer);
     }
 
     protected boolean canTransfer(Long accountId){
@@ -85,17 +91,9 @@ public class TransferService {
 
     protected void executeTransfer(Long accountId, BigDecimal amount) {
         // Call to transaction service to perform transfer
-        System.out.println("Transfer executed successfully. Details:");
-        System.out.println("Account id: " + accountId);
-        System.out.println("Amount: " + amount);
     }
 
     protected void notifyUser(Long accountId, boolean isSuccessNotification) {
         // Call to notification service to queue message
-        System.out.println("Notification scheduled. Details:");
-        System.out.println("Account id: " + accountId);
-        System.out.println("Success: " + isSuccessNotification);
-
-
     }
 }

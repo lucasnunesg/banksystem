@@ -7,6 +7,7 @@ import com.lucasnunesg.banksystem.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +42,18 @@ public class AccountService {
     public boolean canTransfer(Long id) {
         Account account = findById(id);
         return account instanceof PersonalAccount;
+    }
+
+    public void credit(Long id, BigDecimal amount) {
+        Account account = findById(id);
+        account.setBalance(account.getBalance().add(amount));
+        repository.save(account);
+    }
+
+    public void debit(Long id, BigDecimal amount) {
+        Account account = findById(id);
+        account.setBalance(account.getBalance().subtract(amount));
+        repository.save(account);
     }
 
 }
