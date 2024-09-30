@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 @Configuration
@@ -31,6 +32,9 @@ public class DatabaseSeed implements CommandLineRunner {
                 "09876543210",
                 "syndicate@gmail.com",
                 "admin");
+
+        ba1.setBalance(BigDecimal.valueOf(5000.00));
+        pa1.setBalance(BigDecimal.valueOf(3000.00));
 
         accountRepository.saveAll(Arrays.asList(pa1, ba1));
     }
