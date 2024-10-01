@@ -20,7 +20,7 @@ public class AuthorizationService {
         var response = authorizationClient.isAuthorizedTransaction();
 
         if (response.getStatusCode().isError()) {
-            throw new UnauthorizedTransactionException("Authorization failed");
+            throw new UnauthorizedTransactionException("External authorization service is not responding");
         }
 
         return response.getBody().data().authorization();

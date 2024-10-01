@@ -15,7 +15,7 @@ public class UnauthorizedTransactionException extends BankSystemGenericException
     public ProblemDetail createProblemDetail() {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
 
-        problemDetail.setTitle("Transaction unauthorized by external service");
+        problemDetail.setTitle("Authorization Failed");
         problemDetail.setDetail(details);
 
         return problemDetail;
