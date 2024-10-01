@@ -6,6 +6,7 @@ import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
 import com.lucasnunesg.banksystem.entities.Account;
 import com.lucasnunesg.banksystem.entities.Transfer;
 import com.lucasnunesg.banksystem.exceptions.FailedTransferException;
+import com.lucasnunesg.banksystem.exceptions.ResourceNotFoundException;
 import com.lucasnunesg.banksystem.exceptions.UnauthorizedTransactionException;
 import com.lucasnunesg.banksystem.repositories.TransferRepository;
 import jakarta.transaction.Transactional;
@@ -43,7 +44,7 @@ public class TransferService {
 
     public Transfer findById(Long id) {
         Optional<Transfer> obj = transferRepository.findById(id);
-        return obj.orElseThrow(() -> new IllegalArgumentException("Transfer not found:" + id));
+        return obj.orElseThrow(() -> new ResourceNotFoundException("Transfer not found:" + id));
     }
 
     @Transactional
