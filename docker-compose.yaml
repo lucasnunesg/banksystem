@@ -22,6 +22,7 @@ services:
     container_name: springboot_app
     depends_on:
       - postgres
+      - rabbitmq
     ports:
       - "8080:8080"
     environment:
@@ -31,8 +32,18 @@ services:
     networks:
       - springboot-network
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq_container
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - springboot-network
+
 networks:
   springboot-network:
+    driver: bridge
 
 volumes:
   postgres_data:

@@ -1,10 +1,7 @@
 package com.lucasnunesg.banksystem.controllers;
 
-import com.lucasnunesg.banksystem.controllers.dto.CreateAccountDto;
 import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
-import com.lucasnunesg.banksystem.entities.Account;
 import com.lucasnunesg.banksystem.entities.Transfer;
-import com.lucasnunesg.banksystem.services.AccountService;
 import com.lucasnunesg.banksystem.services.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
