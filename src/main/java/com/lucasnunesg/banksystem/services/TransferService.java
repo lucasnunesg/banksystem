@@ -1,7 +1,5 @@
 package com.lucasnunesg.banksystem.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucasnunesg.banksystem.client.dto.NotificationBodyDto;
 import com.lucasnunesg.banksystem.config.RabbitMQConfig;
 import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
@@ -26,8 +24,6 @@ public class TransferService {
     private final RabbitTemplate rabbitTemplate;
     private final TransferRepository transferRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Autowired
     protected TransferService(
             AccountRepository accountRepository,
@@ -51,7 +47,7 @@ public class TransferService {
     }
 
     @Transactional
-    public Transfer transfer(TransferDto transferDto) throws JsonProcessingException {
+    public Transfer transfer(TransferDto transferDto) {
 
         if (transferDto.senderId().equals(transferDto.receiverId())) {
             throw new IllegalArgumentException("Sender and receiver cannot be the same account.");
@@ -110,12 +106,12 @@ public class TransferService {
         // Call to transaction service to perform transfer
     }
 
-    public void notifyUser(Account sender, Account receiver, boolean isSuccessNotification) throws JsonProcessingException {
+    public void notifyUser(Account sender, Account receiver, boolean isSuccessNotification) {
         NotificationBodyDto notificationBody = new NotificationBodyDto(
                 sender,
                 receiver,
                 isSuccessNotification);
 
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.NOTIFICATION_QUEUE, objectMapper.writeValueAsString(notificationBody));
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.NOTIFICATION_QUEUE, notificationBody);
     }
 }

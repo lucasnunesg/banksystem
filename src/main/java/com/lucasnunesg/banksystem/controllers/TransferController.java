@@ -1,6 +1,5 @@
 package com.lucasnunesg.banksystem.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
 import com.lucasnunesg.banksystem.entities.Transfer;
 import com.lucasnunesg.banksystem.services.TransferService;
@@ -36,7 +35,7 @@ public class TransferController {
     }
 
     @PostMapping
-    public ResponseEntity<Transfer> transfer(@RequestBody TransferDto dto) throws JsonProcessingException {
+    public ResponseEntity<Transfer> transfer(@RequestBody TransferDto dto) {
         var transfer = service.transfer(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(transfer.getId()).toUri();
         return ResponseEntity.created(uri).body(transfer);
