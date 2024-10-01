@@ -50,7 +50,7 @@ public class TransferService {
     public Transfer transfer(TransferDto transferDto) {
 
         if (transferDto.senderId().equals(transferDto.receiverId())) {
-            throw new IllegalArgumentException("Sender and receiver cannot be the same account.");
+            throw new FailedTransferException("Sender and receiver cannot be the same account");
         }
 
         Long senderId = transferDto.senderId();
