@@ -5,6 +5,7 @@ import com.lucasnunesg.banksystem.config.RabbitMQConfig;
 import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
 import com.lucasnunesg.banksystem.entities.Account;
 import com.lucasnunesg.banksystem.entities.Transfer;
+import com.lucasnunesg.banksystem.exceptions.UnauthorizedTransactionException;
 import com.lucasnunesg.banksystem.repositories.TransferRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -57,16 +58,16 @@ public class TransferService {
         BigDecimal amount = transferDto.amount();
 
         if (!accountService.canTransfer(senderId)) {
-            throw new UnsupportedOperationException("Business accounts can't transfer money");
+            throw new UnauthorizedTransactionException("Business accounts can't transfer money");
         }
 
         if (!checkBalance(senderId, amount)) {
-            throw new UnsupportedOperationException("Insufficient balance");
+            throw new UnauthorizedTransactionException("Insufficient balance");
         }
 
         if (!authorizationService.isAuthorizedTransaction()) {
             notifyUser(senderId, receiverId, false);
-            throw new UnsupportedOperationException("Transaction was not authorized");
+            throw new UnauthorizedTransactionException("Transaction was not authorized by external service");
         }
 
         try {
@@ -105,7 +106,7 @@ public class TransferService {
                 senderId,
                 receiverId,
                 isSuccessNotification);
-
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.NOTIFICATION_QUEUE, notificationBody);
+        // rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, notificationBody);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.NOTIFICATION_QUEUE, notificationBody);
     }
 }
