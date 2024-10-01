@@ -1,7 +1,6 @@
 package com.lucasnunesg.banksystem.client;
 
 import com.lucasnunesg.banksystem.client.dto.NotificationBodyDto;
-import com.lucasnunesg.banksystem.entities.Transfer;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
