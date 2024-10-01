@@ -17,16 +17,18 @@ import java.util.Optional;
 public class TransferService {
 
     private final AccountService accountService;
-
+    private final AuthorizationService authorizationService;
     private final TransferRepository transferRepository;
 
     @Autowired
     protected TransferService(
             AccountRepository accountRepository,
             AccountService accountService,
+            AuthorizationService authorizationService,
             TransferRepository transferRepository) {
         this.accountService = accountService;
         this.transferRepository = transferRepository;
+        this.authorizationService = authorizationService;
     }
 
     public List<Transfer> findAll() {
@@ -48,28 +50,28 @@ public class TransferService {
         Account sender = accountService.findById(transferDto.senderId());
         Account receiver = accountService.findById(transferDto.receiverId());
 
-        Long payeeId = sender.getId();
+        Long senderId = sender.getId();
         BigDecimal amount = transferDto.amount();
 
-        if (!canTransfer(payeeId)) {
+        if (!canTransfer(senderId)) {
             throw new UnsupportedOperationException("Business accounts can't transfer money");
         }
 
-        if (!checkBalance(payeeId, amount)) {
+        if (!checkBalance(senderId, amount)) {
             throw new UnsupportedOperationException("Insufficient balance");
         }
 
-        if (!authorizeTransaction()) {
-            notifyUser(payeeId, false);
+        if (!authorizationService.isAuthorizedTransaction()) {
+            notifyUser(senderId, false);
             throw new UnsupportedOperationException("Transaction was not authorized");
         }
 
         try {
-            executeTransfer(payeeId, amount);
+            executeTransfer(senderId, amount);
         } catch (Exception e) {
-            notifyUser(payeeId, false);
+            notifyUser(senderId, false);
         }
-        notifyUser(payeeId, true);
+        notifyUser(senderId, true);
 
         accountService.credit(receiver.getId(),amount);
         accountService.debit(sender.getId(), amount);
