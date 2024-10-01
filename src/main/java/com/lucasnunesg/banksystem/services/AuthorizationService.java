@@ -1,6 +1,7 @@
 package com.lucasnunesg.banksystem.services;
 
 import com.lucasnunesg.banksystem.client.AuthorizationClient;
+import com.lucasnunesg.banksystem.exceptions.UnauthorizedTransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class AuthorizationService {
         var response = authorizationClient.isAuthorizedTransaction();
 
         if (response.getStatusCode().isError()) {
-            throw new UnsupportedOperationException("Transaction not authorized.");
+            throw new UnauthorizedTransactionException("Authorization failed");
         }
 
         return response.getBody().data().authorization();
