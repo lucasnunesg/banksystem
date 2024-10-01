@@ -1,8 +1,6 @@
 package com.lucasnunesg.banksystem.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -14,27 +12,30 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     public static final String NOTIFICATION_QUEUE = "notification.queue";
-    public static final String EXCHANGE = "notification.exchange";
-    public static final String ROUTING_KEY = "notification.#";
 
     @Bean
     public Queue notificationQueue() {
-        return new Queue(NOTIFICATION_QUEUE, true);
+        return QueueBuilder.durable(RabbitMQConfig.NOTIFICATION_QUEUE)
+                .withArgument("x-dead-letter-exchange", "dlx_exchange")
+                .withArgument("x-dead-letter-routing-key", "dlx_routing_key")
+                .withArgument("x-message-ttl", 60000)
+                .build();
     }
 
     @Bean
-    public TopicExchange topicExchange() {
-        return new TopicExchange(EXCHANGE);
+    public Queue deadLetterQueue() {
+        return QueueBuilder.durable("dlq")
+                .build();
     }
 
     @Bean
-    public Binding binding(Queue queue, TopicExchange topicExchange) {
-        return new Binding(
-                queue.getName(),
-                Binding.DestinationType.QUEUE,
-                topicExchange.getName(),
-                ROUTING_KEY,
-                null);
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange("dlx_exchange");
+    }
+
+    @Bean
+    public Binding dlqBinding(Queue deadLetterQueue, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with("dlx_routing_key");
     }
 
     @Bean
