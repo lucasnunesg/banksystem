@@ -12,10 +12,10 @@ public class AccountAlreadyExistsException extends BankSystemGenericException{
     }
 
     @Override
-    public ProblemDetail problemDetailFactory() {
+    public ProblemDetail createProblemDetail() {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
 
-        problemDetail.setTitle("Account with given e-mail and/or Document already exists");
+        problemDetail.setTitle("Account already exists");
         problemDetail.setDetail(details);
 
         return problemDetail;
