@@ -1,5 +1,7 @@
 package com.lucasnunesg.banksystem.entities.enums;
 
+import com.lucasnunesg.banksystem.exceptions.InvalidAccountTypeException;
+
 public enum AccountType {
 
     PERSONAL(1),
@@ -21,6 +23,6 @@ public enum AccountType {
                 return account;
             }
         }
-        throw new IllegalArgumentException("Invalid account type");
+        throw new InvalidAccountTypeException("Account type not supported");
     }
 }

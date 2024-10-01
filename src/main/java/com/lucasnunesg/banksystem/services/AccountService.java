@@ -3,6 +3,8 @@ package com.lucasnunesg.banksystem.services;
 import com.lucasnunesg.banksystem.controllers.dto.CreateAccountDto;
 import com.lucasnunesg.banksystem.entities.Account;
 import com.lucasnunesg.banksystem.entities.PersonalAccount;
+import com.lucasnunesg.banksystem.exceptions.AccountAlreadyExistsException;
+import com.lucasnunesg.banksystem.exceptions.ResourceNotFoundException;
 import com.lucasnunesg.banksystem.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class AccountService {
     public Account createAccount(CreateAccountDto dto) {
         Optional<Account> account = repository.findByEmailOrDocument(dto.email(), dto.document());
         if (account.isPresent()) {
-            throw new UnsupportedOperationException("Account already exists");
+            throw new AccountAlreadyExistsException("E-mail or Document already belong to an account");
         }
         return repository.save(dto.toEntity());
     }
@@ -36,7 +38,7 @@ public class AccountService {
 
     public Account findById(Long id) {
         Optional<Account> obj = repository.findById(id);
-        return obj.orElseThrow(() -> new IllegalArgumentException("User not found:" + id));
+        return obj.orElseThrow(() -> new ResourceNotFoundException("User not found:" + id));
     }
 
     public boolean canTransfer(Long id) {

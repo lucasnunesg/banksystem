@@ -4,6 +4,7 @@ import com.lucasnunesg.banksystem.entities.Account;
 import com.lucasnunesg.banksystem.entities.BusinessAccount;
 import com.lucasnunesg.banksystem.entities.PersonalAccount;
 import com.lucasnunesg.banksystem.entities.enums.AccountType;
+import com.lucasnunesg.banksystem.exceptions.InvalidAccountTypeException;
 import jakarta.validation.constraints.NotBlank;
 
 
@@ -20,6 +21,6 @@ public record CreateAccountDto(
         } else if (accountType == AccountType.PERSONAL) {
             return new PersonalAccount(fullName, document, email, password);
         }
-        throw new IllegalArgumentException("Invalid account type: " + accountType);
+        throw new InvalidAccountTypeException("Account type not supported: " + accountType);
     }
 }

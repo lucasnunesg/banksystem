@@ -5,6 +5,9 @@ import com.lucasnunesg.banksystem.config.RabbitMQConfig;
 import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
 import com.lucasnunesg.banksystem.entities.Account;
 import com.lucasnunesg.banksystem.entities.Transfer;
+import com.lucasnunesg.banksystem.exceptions.FailedTransferException;
+import com.lucasnunesg.banksystem.exceptions.ResourceNotFoundException;
+import com.lucasnunesg.banksystem.exceptions.UnauthorizedTransactionException;
 import com.lucasnunesg.banksystem.repositories.TransferRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -41,14 +44,14 @@ public class TransferService {
 
     public Transfer findById(Long id) {
         Optional<Transfer> obj = transferRepository.findById(id);
-        return obj.orElseThrow(() -> new IllegalArgumentException("Transfer not found:" + id));
+        return obj.orElseThrow(() -> new ResourceNotFoundException("Transfer not found:" + id));
     }
 
     @Transactional
     public Transfer transfer(TransferDto transferDto) {
 
         if (transferDto.senderId().equals(transferDto.receiverId())) {
-            throw new IllegalArgumentException("Sender and receiver cannot be the same account.");
+            throw new FailedTransferException("Sender and receiver cannot be the same account");
         }
 
         Long senderId = transferDto.senderId();
@@ -57,16 +60,16 @@ public class TransferService {
         BigDecimal amount = transferDto.amount();
 
         if (!accountService.canTransfer(senderId)) {
-            throw new UnsupportedOperationException("Business accounts can't transfer money");
+            throw new UnauthorizedTransactionException("Business accounts can't transfer money");
         }
 
         if (!checkBalance(senderId, amount)) {
-            throw new UnsupportedOperationException("Insufficient balance");
+            throw new UnauthorizedTransactionException("Insufficient balance");
         }
 
         if (!authorizationService.isAuthorizedTransaction()) {
             notifyUser(senderId, receiverId, false);
-            throw new UnsupportedOperationException("Transaction was not authorized");
+            throw new UnauthorizedTransactionException("Transaction was not authorized by external service");
         }
 
         try {
@@ -96,7 +99,8 @@ public class TransferService {
             accountService.debit(senderId, amount);
             accountService.credit(receiverId, amount);
         } catch (Exception e) {
-            throw new UnsupportedOperationException("There was an error with the transfer");
+            throw new FailedTransferException(
+                    String.format("Unable to move balance between accounts %s and %s", senderId, receiverId));
         }
     }
 
@@ -105,7 +109,7 @@ public class TransferService {
                 senderId,
                 receiverId,
                 isSuccessNotification);
-
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.NOTIFICATION_QUEUE, notificationBody);
+        // rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, notificationBody);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.NOTIFICATION_QUEUE, notificationBody);
     }
 }
