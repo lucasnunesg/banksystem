@@ -5,6 +5,7 @@ import com.lucasnunesg.banksystem.config.RabbitMQConfig;
 import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
 import com.lucasnunesg.banksystem.entities.Account;
 import com.lucasnunesg.banksystem.entities.Transfer;
+import com.lucasnunesg.banksystem.exceptions.FailedTransferException;
 import com.lucasnunesg.banksystem.exceptions.UnauthorizedTransactionException;
 import com.lucasnunesg.banksystem.repositories.TransferRepository;
 import jakarta.transaction.Transactional;
@@ -97,7 +98,8 @@ public class TransferService {
             accountService.debit(senderId, amount);
             accountService.credit(receiverId, amount);
         } catch (Exception e) {
-            throw new UnsupportedOperationException("There was an error with the transfer");
+            throw new FailedTransferException(
+                    String.format("Unable to move balance between accounts %s and %s", senderId, receiverId));
         }
     }
 
