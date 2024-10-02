@@ -1,16 +1,16 @@
 package com.lucasnunesg.banksystem.services;
 
-import com.lucasnunesg.banksystem.client.dto.NotificationBodyDto;
-import com.lucasnunesg.banksystem.config.RabbitMQConfig;
 import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
 import com.lucasnunesg.banksystem.entities.Account;
 import com.lucasnunesg.banksystem.entities.Transfer;
+import com.lucasnunesg.banksystem.exceptions.ExternalServiceUnavailableException;
 import com.lucasnunesg.banksystem.exceptions.FailedTransferException;
 import com.lucasnunesg.banksystem.exceptions.ResourceNotFoundException;
 import com.lucasnunesg.banksystem.exceptions.UnauthorizedTransactionException;
 import com.lucasnunesg.banksystem.repositories.TransferRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,18 +23,20 @@ public class TransferService {
 
     private final AccountService accountService;
     private final AuthorizationService authorizationService;
-    private final RabbitTemplate rabbitTemplate;
+    private final NotificationService notificationService;
     private final TransferRepository transferRepository;
+
+    private final Logger logger = LoggerFactory.getLogger(TransferService.class);
 
     @Autowired
     protected TransferService(
             AccountService accountService,
             AuthorizationService authorizationService,
-            RabbitTemplate rabbitTemplate,
+            NotificationService notificationService,
             TransferRepository transferRepository) {
         this.accountService = accountService;
         this.authorizationService = authorizationService;
-        this.rabbitTemplate = rabbitTemplate;
+        this.notificationService = notificationService;
         this.transferRepository = transferRepository;
     }
 
@@ -50,12 +52,12 @@ public class TransferService {
     @Transactional
     public Transfer transfer(TransferDto transferDto) {
 
-        if (transferDto.senderId().equals(transferDto.receiverId())) {
-            throw new FailedTransferException("Sender and receiver cannot be the same account");
-        }
-
         Long senderId = transferDto.senderId();
         Long receiverId = transferDto.receiverId();
+
+        if (senderId.equals(receiverId)) {
+            throw new FailedTransferException("Sender and receiver cannot be the same account");
+        }
 
         BigDecimal amount = transferDto.amount();
 
@@ -67,18 +69,25 @@ public class TransferService {
             throw new UnauthorizedTransactionException("Insufficient balance");
         }
 
-        if (!authorizationService.isAuthorizedTransaction()) {
-            notifyUser(senderId, receiverId, false);
-            throw new UnauthorizedTransactionException("Transaction was not authorized by external service");
+        try {
+            boolean isAuthorized = authorizationService.isAuthorizedTransaction();
+            if (!isAuthorized) {
+                notificationService.notifyUser(senderId, receiverId, false);
+                throw new UnauthorizedTransactionException("Transaction was not authorized by external service");
+            }
+        } catch (ExternalServiceUnavailableException e) {
+            notificationService.notifyUser(senderId, receiverId, false);
+            throw e;
         }
 
         try {
             executeTransfer(senderId, receiverId, amount);
         } catch (Exception e) {
-            notifyUser(senderId, receiverId, false);
+            notificationService.notifyUser(senderId, receiverId, false);
         }
 
-        notifyUser(senderId, receiverId, true);
+        logger.info("Transfer is complete, now sending notification");
+        notificationService.notifyUser(senderId, receiverId, true);
 
         Account sender = accountService.findById(transferDto.senderId());
         Account receiver = accountService.findById(transferDto.receiverId());
@@ -102,14 +111,5 @@ public class TransferService {
             throw new FailedTransferException(
                     String.format("Unable to move balance between accounts %s and %s", senderId, receiverId));
         }
-    }
-
-    public void notifyUser(Long senderId, Long receiverId, boolean isSuccessNotification) {
-        NotificationBodyDto notificationBody = new NotificationBodyDto(
-                senderId,
-                receiverId,
-                isSuccessNotification);
-        // rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, notificationBody);
-        rabbitTemplate.convertAndSend(RabbitMQConfig.NOTIFICATION_QUEUE, notificationBody);
     }
 }

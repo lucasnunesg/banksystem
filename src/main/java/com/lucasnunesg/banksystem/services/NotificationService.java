@@ -1,32 +1,29 @@
 package com.lucasnunesg.banksystem.services;
 
-import com.lucasnunesg.banksystem.client.NotificationClient;
+
 import com.lucasnunesg.banksystem.client.dto.NotificationBodyDto;
 import com.lucasnunesg.banksystem.config.RabbitMQConfig;
-import feign.FeignException;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationService {
 
-    private final NotificationClient notificationClient;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public NotificationService(NotificationClient notificationClient) {
-        this.notificationClient = notificationClient;
+    public NotificationService(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
     }
 
-    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
-    public void handleNotification(NotificationBodyDto notificationBody) {
-        try{
-            notificationClient.notifyUser(notificationBody);
-            System.out.println("Notification Queued Successfully");
-        } catch (FeignException e) {
-            System.out.println("Notification failed, requeing: " + e.getMessage());
-            throw e;
-        }
+    public void notifyUser(Long senderId, Long receiverId, boolean isSuccessNotification) {
+        NotificationBodyDto notificationBody = new NotificationBodyDto(
+                senderId,
+                receiverId,
+                isSuccessNotification);
 
+        rabbitTemplate.convertAndSend(RabbitMQConfig.NOTIFICATION_QUEUE, notificationBody);
     }
+
 }
