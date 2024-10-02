@@ -20,3 +20,11 @@ Utilizar o arquivo `infra.yaml`:
 docker-compose -f infra.yaml up
 ```
 Após inicializar o container, rodar o projeto localmente (direto pela IDE, por exemplo)
+
+
+## Testes unitários
+
+Para rodar os testes unitários, basta, na raiz do projeto usar o comando:
+```bash
+./mvnw test
+```

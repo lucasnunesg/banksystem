@@ -84,6 +84,7 @@ public class TransferService {
             executeTransfer(payerId, payeeId, amount);
         } catch (Exception e) {
             notificationService.notifyUser(payerId, payeeId, false);
+            throw e;
         }
 
         logger.info("Transfer is complete, now sending notification");
