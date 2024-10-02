@@ -13,7 +13,7 @@ public class FailedTransferException extends BankSystemGenericException{
 
     @Override
     public ProblemDetail createProblemDetail() {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 
         problemDetail.setTitle("There was an issue with the transfer");
         problemDetail.setDetail(details);

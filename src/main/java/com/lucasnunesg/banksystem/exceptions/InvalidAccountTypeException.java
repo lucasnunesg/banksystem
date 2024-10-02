@@ -13,7 +13,7 @@ public class InvalidAccountTypeException extends BankSystemGenericException{
 
     @Override
     public ProblemDetail createProblemDetail() {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
 
         problemDetail.setTitle("Invalid account type");
         problemDetail.setDetail(details);
