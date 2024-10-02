@@ -5,10 +5,9 @@ import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Entity
-@Table(name = "transfers")
+@Table(name = "tb_transfers")
 public class Transfer implements Serializable {
 
     @Serial
@@ -19,23 +18,22 @@ public class Transfer implements Serializable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sender_account_id")
-    private Account sender;
+    @JoinColumn(name = "payer_account_id")
+    private Account payer;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_account_id")
-    private Account receiver;
+    @JoinColumn(name = "payee_account_id")
+    private Account payee;
 
-    private BigDecimal amount;
+    private BigDecimal value;
 
     public Transfer(){}
 
-    public Transfer(Account sender, Account receiver, BigDecimal amount) {
-        this.sender = sender;
-        this.receiver = receiver;
-        this.amount = amount;
+    public Transfer(Account payer, Account payee, BigDecimal value) {
+        this.payer = payer;
+        this.payee = payee;
+        this.value = value;
     }
-
 
     public Long getId() {
         return id;
@@ -45,27 +43,27 @@ public class Transfer implements Serializable {
         this.id = id;
     }
 
-    public Account getSender() {
-        return sender;
+    public Account getPayer() {
+        return payer;
     }
 
-    public void setSender(Account sender) {
-        this.sender = sender;
+    public void setPayer(Account payer) {
+        this.payer = payer;
     }
 
-    public Account getReceiver() {
-        return receiver;
+    public Account getPayee() {
+        return payee;
     }
 
-    public void setReceiver(Account receiver) {
-        this.receiver = receiver;
+    public void setPayee(Account payee) {
+        this.payee = payee;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getValue() {
+        return value;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setValue(BigDecimal value) {
+        this.value = value;
     }
 }

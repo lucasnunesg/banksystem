@@ -52,47 +52,47 @@ public class TransferService {
     @Transactional
     public Transfer transfer(TransferDto transferDto) {
 
-        Long senderId = transferDto.senderId();
-        Long receiverId = transferDto.receiverId();
+        Long payerId = transferDto.payer();
+        Long payeeId = transferDto.payee();
 
-        if (senderId.equals(receiverId)) {
+        if (payerId.equals(payeeId)) {
             throw new FailedTransferException("Sender and receiver cannot be the same account");
         }
 
-        BigDecimal amount = transferDto.amount();
+        BigDecimal amount = transferDto.value();
 
-        if (!accountService.canTransfer(senderId)) {
+        if (!accountService.canTransfer(payerId)) {
             throw new UnauthorizedTransactionException("Business accounts can't transfer money");
         }
 
-        if (!checkBalance(senderId, amount)) {
+        if (!checkBalance(payerId, amount)) {
             throw new UnauthorizedTransactionException("Insufficient balance");
         }
 
         try {
             boolean isAuthorized = authorizationService.isAuthorizedTransaction();
             if (!isAuthorized) {
-                notificationService.notifyUser(senderId, receiverId, false);
+                notificationService.notifyUser(payerId, payeeId, false);
                 throw new UnauthorizedTransactionException("Transaction was not authorized by external service");
             }
         } catch (ExternalServiceUnavailableException e) {
-            notificationService.notifyUser(senderId, receiverId, false);
+            notificationService.notifyUser(payerId, payeeId, false);
             throw e;
         }
 
         try {
-            executeTransfer(senderId, receiverId, amount);
+            executeTransfer(payerId, payeeId, amount);
         } catch (Exception e) {
-            notificationService.notifyUser(senderId, receiverId, false);
+            notificationService.notifyUser(payerId, payeeId, false);
         }
 
         logger.info("Transfer is complete, now sending notification");
-        notificationService.notifyUser(senderId, receiverId, true);
+        notificationService.notifyUser(payerId, payeeId, true);
 
-        Account sender = accountService.findById(transferDto.senderId());
-        Account receiver = accountService.findById(transferDto.receiverId());
+        Account payer = accountService.findById(transferDto.payer());
+        Account payee = accountService.findById(transferDto.payee());
 
-        Transfer transfer = new Transfer(sender, receiver, amount);
+        Transfer transfer = new Transfer(payer, payee, amount);
 
         return transferRepository.save(transfer);
     }
@@ -103,13 +103,13 @@ public class TransferService {
         return amount.compareTo(balance) <= 0;
     }
 
-    protected void executeTransfer(Long senderId, Long receiverId, BigDecimal amount) {
+    protected void executeTransfer(Long payerId, Long payeeId, BigDecimal amount) {
         try {
-            accountService.debit(senderId, amount);
-            accountService.credit(receiverId, amount);
+            accountService.debit(payerId, amount);
+            accountService.credit(payeeId, amount);
         } catch (Exception e) {
             throw new FailedTransferException(
-                    String.format("Unable to move balance between accounts %s and %s", senderId, receiverId));
+                    String.format("Unable to move balance between accounts %s and %s", payerId, payeeId));
         }
     }
 }

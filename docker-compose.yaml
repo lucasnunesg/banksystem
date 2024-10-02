@@ -15,6 +15,15 @@ services:
     networks:
       - springboot-network
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq_container
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - springboot-network
+
   app:
     build:
       context: .
@@ -32,14 +41,6 @@ services:
     networks:
       - springboot-network
 
-  rabbitmq:
-    image: rabbitmq:3.13-management
-    container_name: rabbitmq_container
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - springboot-network
 
 networks:
   springboot-network:

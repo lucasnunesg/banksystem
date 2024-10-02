@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "accounts")
+@Table(name = "tb_accounts")
 public abstract class Account implements Serializable {
 
     @Serial
