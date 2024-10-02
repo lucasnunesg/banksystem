@@ -19,8 +19,7 @@ public class AuthorizationService {
     private final AuthorizationClient authorizationClient;
 
     @Autowired
-    public AuthorizationService(AuthorizationClient authorizationClient,
-                                NotificationService notificationService) {
+    public AuthorizationService(AuthorizationClient authorizationClient) {
         this.authorizationClient = authorizationClient;
     }
 
