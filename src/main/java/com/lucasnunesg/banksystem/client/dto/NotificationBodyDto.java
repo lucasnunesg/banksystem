@@ -1,8 +1,8 @@
 package com.lucasnunesg.banksystem.client.dto;
 
 public record NotificationBodyDto(
-        Long senderId,
-        Long receiverId,
+        Long payerId,
+        Long payeeId,
         boolean isSuccessfulTransaction
 ) {
 }

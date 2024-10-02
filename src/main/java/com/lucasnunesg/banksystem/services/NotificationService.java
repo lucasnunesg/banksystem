@@ -17,10 +17,10 @@ public class NotificationService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void notifyUser(Long senderId, Long receiverId, boolean isSuccessNotification) {
+    public void notifyUser(Long payerId, Long payeeId, boolean isSuccessNotification) {
         NotificationBodyDto notificationBody = new NotificationBodyDto(
-                senderId,
-                receiverId,
+                payerId,
+                payeeId,
                 isSuccessNotification);
 
         rabbitTemplate.convertAndSend(RabbitMQConfig.NOTIFICATION_QUEUE, notificationBody);
