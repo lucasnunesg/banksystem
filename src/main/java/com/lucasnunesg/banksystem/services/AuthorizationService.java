@@ -34,6 +34,9 @@ public class AuthorizationService {
                 logger.error("Transaction unauthorized by external service");
                 return false;
             }
+            logger.error("Unknown Feign Error");
+            throw new ExternalServiceUnavailableException("External authorization system is not responding: " + e.getMessage());
+        } catch (Exception e) {
             logger.error("External authorization service failed");
             throw new ExternalServiceUnavailableException("External authorization system is not responding: " + e.getMessage());
         }
