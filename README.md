@@ -1,5 +1,68 @@
 # Bank System Application
 
+## Descrição do projeto
+
+O projeto consiste num sistema bancário simplificado, onde é possível cadastrar novas contas e realizar transferência entre elas.
+Existem dois tipos de conta: `PERSONAL` e `BUSINESS`. A diferença entre elas é que a conta business não pode transferir, apenas receber dinheiro.
+
+A aplicação realiza consulta em um serviço de autorização externo, para definir se a transação ocorrerá ou não.
+Adicionalmente há um serviço de notificação extera, que pode apresentar lentidão na resposta, e por isso foi configurado o sistema de mensageria com RabbitMQ para evitar a perda de mensagens.
+
+### Endpoints
+> OBS: Existe uma postman collection no repositório para testes. Por padrão o projeto roda no http://0.0.0.0/8080
+
+Listar todas as contas cadastradas:
+```http request
+GET /accounts
+```
+
+Detalhes de uma conta por id (no parâmetro da requisição)
+```http request
+GET /accounts/{id}
+```
+
+Criar conta:
+```http request
+POST /accounts
+Content-Type: application/json
+
+{
+    "fullName": "Michael Scott",
+    "document": "012.345.678-90",
+    "email": "michaelscott@dundermifflin.com",
+    "password": "itsbritneyb*tch",
+    "accountType": "PERSONAL" //BUSINESS
+}
+```
+
+Listar todas as transferências realizadas:
+```http request
+GET /transfer
+```
+
+Detalhes de uma transferência por id (no parâmetro da requisição)
+```http request
+GET /transfer/{id}
+```
+
+Realizar transferências entre contas:
+```http request
+POST /transfer
+Content-Type: application/json
+
+{
+"value": 100.0,
+"payer": 4,
+"payee": 15
+}
+```
+
+## Tecnologias usadas
+- Java Spring Boot para a aplicação;
+- OpenFeign para consulta de API's externas;
+- PostgreSQL para o banco de dados;
+- RabbitMQ para mensageria;
+- Mockito e JUnit para testes unitários.
 
 ## Como rodar o projeto
 
@@ -21,10 +84,22 @@ docker-compose -f infra.yaml up
 ```
 Após inicializar o container, rodar o projeto localmente (direto pela IDE, por exemplo)
 
-
+#### Variáveis de ambiente necessárias
+Criar um arquivo `.env` na raiz do projeto (se ele não existir após rodar o docker) contendo:
+```env
+POSTGRES_DB=banksystemdb
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=root
+```
 ## Testes unitários
 
 Para rodar os testes unitários, basta, na raiz do projeto usar o comando:
 ```bash
 ./mvnw test
 ```
+
+## Sugestões de melhoria
+- Implementação de cache para as consultas no banco;
+- Melhoria (refatoração) da lógica usada para definir quais contas podem realizar transferência;
+- Otimização das configurações do RabbitMQ para melhorar a eficiência do serviço de mensageria;
+- Aumentar a cobertura de testes unitários.
