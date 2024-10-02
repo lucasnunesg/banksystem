@@ -3,6 +3,7 @@ package com.lucasnunesg.banksystem.controllers;
 import com.lucasnunesg.banksystem.controllers.dto.TransferDto;
 import com.lucasnunesg.banksystem.entities.Transfer;
 import com.lucasnunesg.banksystem.services.TransferService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class TransferController {
     }
 
     @PostMapping
-    public ResponseEntity<Transfer> transfer(@RequestBody TransferDto dto) {
+    public ResponseEntity<Transfer> transfer(@Valid @RequestBody TransferDto dto) {
         var transfer = service.transfer(dto);
         return ResponseEntity.ok().body(transfer);
     }
