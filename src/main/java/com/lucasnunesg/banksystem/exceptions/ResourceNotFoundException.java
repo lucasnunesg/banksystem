@@ -13,7 +13,7 @@ public class ResourceNotFoundException extends BankSystemGenericException{
 
     @Override
     public ProblemDetail createProblemDetail() {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
 
         problemDetail.setTitle("Resource not found exception");
         problemDetail.setDetail(details);
