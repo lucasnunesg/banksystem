@@ -3,19 +3,19 @@ package com.lucasnunesg.banksystem.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 
-public class FailedTransferException extends BankSystemGenericException{
+public class ExternalServiceUnavailableException extends BankSystemGenericException{
 
     private final String details;
 
-    public FailedTransferException(String details) {
+    public ExternalServiceUnavailableException(String details) {
         this.details = details;
     }
 
     @Override
     public ProblemDetail createProblemDetail() {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.SERVICE_UNAVAILABLE);
 
-        problemDetail.setTitle("There was an issue with the transfer");
+        problemDetail.setTitle("External Authorization API Unavailable");
         problemDetail.setDetail(details);
 
         return problemDetail;

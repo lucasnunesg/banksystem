@@ -13,7 +13,7 @@ public class UnauthorizedTransactionException extends BankSystemGenericException
 
     @Override
     public ProblemDetail createProblemDetail() {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
 
         problemDetail.setTitle("Authorization Failed");
         problemDetail.setDetail(details);
