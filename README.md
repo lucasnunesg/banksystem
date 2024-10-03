@@ -69,6 +69,16 @@ Content-Type: application/json
 Existem duas possibilidades para rodar o projeto, a primeira delas é usando o docker para tudo (aplicação + demais serviços).
 A outra opção é rodar localmente um arquivo secundário no docker-compose somente com os serviços e rodar a aplicação localmente.
 
+Para ambas as abordagens é necessário definir as variáveis de ambiente:
+
+### Variáveis de ambiente necessárias
+Criar um arquivo `.env` na raiz do projeto contendo (ou copiar do arquivo `.env.sample`):
+```env
+POSTGRES_DB=banksystemdb
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=root
+```
+
 ### Utilizando apenas o docker
 
 Para rodar tudo no docker basta utilizar o `docker-compose.yaml` da seguinte maneira:
@@ -84,13 +94,7 @@ docker-compose -f infra.yaml up
 ```
 Após inicializar o container, rodar o projeto localmente (direto pela IDE, por exemplo)
 
-#### Variáveis de ambiente necessárias
-Criar um arquivo `.env` na raiz do projeto (se ele não existir após rodar o docker) contendo:
-```env
-POSTGRES_DB=banksystemdb
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=root
-```
+
 ## Testes unitários
 
 Para rodar os testes unitários, basta, na raiz do projeto usar o comando:
