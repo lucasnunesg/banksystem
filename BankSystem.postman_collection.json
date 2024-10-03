@@ -1,0 +1,147 @@
+{
+	"info": {
+		"_postman_id": "11236d58-01e5-4e73-860c-3a75fb930283",
+		"name": "Bank System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30441697"
+	},
+	"item": [
+		{
+			"name": "List all accounts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bank-system}}/accounts",
+					"host": [
+						"{{bank-system}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Account By Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bank-system}}/accounts/:id",
+					"host": [
+						"{{bank-system}}"
+					],
+					"path": [
+						"accounts",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create account",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fullName\": \"{{$randomFullName}}\",\n    \"document\": \"{{$randomPhoneNumber}}\",\n    // \"document\": \"teste\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{$randomPassword}}\",\n    \"accountType\": \"PERSONAL\"\n    //\"accountType\": \"BUSINESS\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{bank-system}}/accounts",
+					"host": [
+						"{{bank-system}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List all transfers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bank-system}}/transfer",
+					"host": [
+						"{{bank-system}}"
+					],
+					"path": [
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer By Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bank-system}}/transfers/:id",
+					"host": [
+						"{{bank-system}}"
+					],
+					"path": [
+						"transfers",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Transfer",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"value\": 100,\n    \"payer\": 1,\n    \"payee\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{bank-system}}/transfer",
+					"host": [
+						"{{bank-system}}"
+					],
+					"path": [
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
